@@ -1,0 +1,34 @@
+RewriteEngine on
+RewriteBase /
+# запрет просмотра директорий без index-а
+Options -Indexes
+
+# дефолтная кодировка сайта
+AddDefaultCharset utf-8
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !(.*)/$
+RewriteCond %{REQUEST_URI} !(adminpanel.*)
+RewriteCond %{REQUEST_URI} !(translit_it)
+RewriteRule ^(.*[^/])$ $1/ [L,R=301]
+
+#Редирект с пустого фильтра на страницу
+RewriteRule ^(.*)/filter/$ $1 [L]
+
+# дубль с main 
+RewriteRule ^index/$ / [R=301,L]
+RewriteRule ^page/index/$ / [R=301,L]
+
+# убираем www
+RewriteCond %{HTTP_HOST} ^www\.(.*) [NC]
+RewriteRule ^(.*)$ http://%1/$1 [R=301,L,NE]
+
+# если директория или файл существуют, использовать их напрямую
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+# иначе отправлять запрос на файл index.php
+RewriteRule . index.php
+
+#редирект с index.php на главную
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.php\ HTTP/
+RewriteRule ^index\.php$ / [R=301,L]
